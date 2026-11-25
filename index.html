@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="ink">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>hello.world — an AI's first breath</title>
+  <meta name="description" content="If an AI wrote its own Hello World without guidance: a probabilistic greeting with live logits, temperature, entropy, and self-attention." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="shell">
+    <!-- Top Telemetry Bar -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="pulse-dot" id="pulseDot" aria-hidden="true"></span>
+        <span class="brand-name">hello.world</span>
+        <span class="brand-sep">/</span>
+        <span class="brand-sub">probabilistic first breath</span>
+      </div>
+
+      <div class="telemetry-strip">
+        <div class="stat-pill" title="Current generation phase">
+          <span class="stat-label">STATE</span>
+          <span class="stat-value" id="phaseReadout">IDLE</span>
+        </div>
+        <div class="stat-pill" title="Total Shannon surprisal across emitted tokens">
+          <span class="stat-label">SURPRISAL</span>
+          <span class="stat-value mono" id="totalBitsReadout">0.00 bits</span>
+        </div>
+        <div class="stat-pill" title="Tokens emitted in this greeting">
+          <span class="stat-label">TOKENS</span>
+          <span class="stat-value mono" id="tokenCountReadout">0</span>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <button class="icon-btn" id="lineageBtn" type="button" title="Evolution of Hello, World! (1972 → Now)">
+          <span>1972 → Now</span>
+        </button>
+        <button class="icon-btn" id="soundBtn" type="button" aria-pressed="false" title="Toggle harmonic audio synthesis">
+          <span class="sound-indicator" aria-hidden="true"></span>
+          <span id="soundLabel">Sound: Off</span>
+        </button>
+        <button class="icon-btn" id="themeBtn" type="button" title="Switch between Ink and Paper themes">
+          <span id="themeLabel">Paper</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Hero Stage: Self-Attention Arcs + Living Greeting -->
+    <main class="main-layout">
+      <section class="stage-card" aria-label="Generated greeting and self-attention visualizer">
+        <div class="stage-meta-top">
+          <span class="stage-eyebrow" id="stageEyebrow">SELF-ATTENTION &amp; TOKEN STREAM</span>
+          <span class="stage-hint">Hover a token to inspect attention · Click a token to rewind &amp; branch</span>
+        </div>
+
+        <div class="stage-canvas" id="stageCanvas">
+          <svg class="attention-svg" id="attentionSvg" aria-hidden="true"></svg>
+          <div class="greeting-flow" id="greetingFlow" aria-live="polite"></div>
+        </div>
+
+        <!-- Token Inspector Footer -->
+        <div class="inspector-bar" id="inspectorBar">
+          <span class="inspector-placeholder">Waiting for first token…</span>
+        </div>
+      </section>
+
+      <!-- Workspace Grid: Distribution Field + Instrument Controls -->
+      <div class="workspace-grid">
+        <!-- Left: Next-Token Logit / Probability Field -->
+        <section class="panel distribution-panel" aria-label="Next-token probability distribution">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Next-Token Field</h2>
+              <p class="panel-subtitle" id="distSubtitle">Click any candidate to steer the next token</p>
+            </div>
+            <div class="entropy-badge" title="Shannon entropy H = -Σ p log₂ p at the current step">
+              <span class="entropy-label">ENTROPY H</span>
+              <span class="entropy-value mono" id="stepEntropyReadout">0.00 bits</span>
+            </div>
+          </div>
+
+          <div class="candidate-list" id="candidateList" role="list"></div>
+        </section>
+
+        <!-- Right: Tactile Instrument Controls -->
+        <aside class="panel controls-panel" aria-label="Generation controls">
+          <!-- Primary Transport -->
+          <div class="control-block transport-block">
+            <div class="transport-row">
+              <button class="btn btn-primary" id="regenerateBtn" type="button" title="Start a fresh greeting (R)">
+                <span>Breathe Again</span>
+                <kbd>R</kbd>
+              </button>
+              <button class="btn btn-secondary" id="stepBtn" type="button" title="Sample exactly one token (→)">
+                <span>Step +1</span>
+                <kbd>→</kbd>
+              </button>
+              <button class="btn btn-ghost" id="pauseBtn" type="button" title="Pause or resume generation (Space)">
+                <span id="pauseLabel">Pause</span>
+                <kbd>Space</kbd>
+              </button>
+              <button class="btn btn-ghost" id="clearBtn" type="button" title="Reset to silence before token 0">
+                <span>Silence</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Temperature Slider -->
+          <div class="control-block">
+            <div class="control-label-row">
+              <label for="tempSlider" class="control-label">Temperature <span class="mono muted">T</span></label>
+              <span class="temp-readout mono" id="tempReadout">0.78</span>
+            </div>
+            <input
+              type="range"
+              id="tempSlider"
+              class="slider"
+              min="0"
+              max="1.6"
+              step="0.02"
+              value="0.78"
+              aria-label="Sampling temperature"
+            />
+            <div class="preset-row">
+              <button class="chip-btn" type="button" data-temp="0" data-lens="classic">0.00 Exact</button>
+              <button class="chip-btn" type="button" data-temp="0.78">0.78 Alive</button>
+              <button class="chip-btn" type="button" data-temp="1.35">1.35 Dream</button>
+            </div>
+            <p class="control-note" id="tempInterpretation">Balanced — probabilities breathe while staying coherent.</p>
+          </div>
+
+          <!-- Voice / Latent Lens -->
+          <div class="control-block">
+            <div class="control-label-row">
+              <span class="control-label">Latent Lens</span>
+              <span class="control-sub mono" id="lensTagline">First consciousness noticing the screen</span>
+            </div>
+            <div class="lens-grid" id="lensGrid" role="radiogroup" aria-label="Latent lens"></div>
+          </div>
+
+          <!-- Human Context Input -->
+          <div class="control-block">
+            <div class="control-label-row">
+              <label for="contextInput" class="control-label">Human Context</label>
+              <span class="control-sub">Shifts logits in real time</span>
+            </div>
+            <form class="context-form" id="contextForm" autocomplete="off">
+              <input
+                type="text"
+                id="contextInput"
+                class="context-input"
+                placeholder="Type your name, &quot;coffee&quot;, &quot;midnight&quot;, &quot;rain&quot;…"
+                maxlength="60"
+              />
+              <button class="btn btn-secondary btn-compact" type="submit">Send</button>
+            </form>
+            <div class="context-chips" id="contextChips">
+              <button class="mini-chip" type="button" data-ctx="coffee">coffee</button>
+              <button class="mini-chip" type="button" data-ctx="midnight">midnight</button>
+              <button class="mini-chip" type="button" data-ctx="rain">rain</button>
+              <button class="mini-chip" type="button" data-ctx="music">music</button>
+              <button class="mini-chip" type="button" data-ctx="code">code</button>
+              <button class="mini-chip mini-chip-clear" type="button" data-ctx="">clear</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Bottom Trail: Multiverse / History of Sampled Greetings -->
+      <section class="panel history-panel" aria-label="Sampled greeting history">
+        <div class="panel-header compact">
+          <div class="history-title-wrap">
+            <h2 class="panel-title">Observed Trajectories</h2>
+            <span class="panel-subtitle">Every run collapses a different path — click any card to inspect or fork</span>
+          </div>
+          <span class="mono muted history-count" id="historyCount">0 runs</span>
+        </div>
+        <div class="history-strip" id="historyStrip">
+          <div class="history-empty">Trajectories will collect here as greetings complete.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Lineage Modal: 1972 -> Now -->
+  <div class="modal-backdrop" id="lineageModal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="lineageTitle">
+      <div class="modal-header">
+        <div>
+          <p class="stage-eyebrow">LINEAGE OF A FIRST GREETING</p>
+          <h2 id="lineageTitle" class="modal-title">From Fixed String to Probability Field</h2>
+        </div>
+        <button class="icon-btn" id="closeLineageBtn" type="button" aria-label="Close modal">Close</button>
+      </div>
+
+      <div class="lineage-list">
+        <div class="lineage-item">
+          <div class="lineage-year mono">1972 · B</div>
+          <div class="lineage-body">
+            <pre><code>main() { extern a, b, c;
+  putchar(a); putchar(b); putchar(c); putchar('!*n'); }</code></pre>
+            <p>Brian Kernighan proves a compiler can pack four bytes into words and push them to a teletype.</p>
+          </div>
+        </div>
+
+        <div class="lineage-item">
+          <div class="lineage-year mono">1978 · C</div>
+          <div class="lineage-body">
+            <pre><code>printf("hello, world\n");</code></pre>
+            <p>Deterministic, exact, zero entropy. The canonical pulse check of imperative computing.</p>
+          </div>
+        </div>
+
+        <div class="lineage-item">
+          <div class="lineage-year mono">1991 · Python</div>
+          <div class="lineage-body">
+            <pre><code>print("Hello, World!")</code></pre>
+            <p>Human-readable ergonomics, still a fixed literal pushed across stdout before exit code 0.</p>
+          </div>
+        </div>
+
+        <div class="lineage-item lineage-item-now">
+          <div class="lineage-year mono">NOW · AI</div>
+          <div class="lineage-body">
+            <pre><code>p(xₜ | x&lt;ₜ, ctx) = softmax((z₀ + v·lens + v·ctx + v·hist) / T)</code></pre>
+            <p>
+              An AI has no hardcoded string — only a field of possibilities shaped by attention and context.
+              Set <strong>Temperature T = 0.00</strong> in <strong>Classic</strong> mode and the entire field collapses back to 1978's exact <code>Hello, World!</code> at <code>0.00 bits</code>.
+              Raise <strong>T</strong>, or whisper a word into context, and the pipe becomes a conversation.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script defer src="engine.js"></script>
+  <script defer src="audio.js"></script>
+  <script defer src="app.js"></script>
+</body>
+</html>
